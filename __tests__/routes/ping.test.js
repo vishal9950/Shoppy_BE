@@ -7,4 +7,11 @@ describe('Test server for GET /ping: ', () => {
       done();
     });
   });
+
+  test('Should return result \'pong\': ', (done) => {
+    Server.inject('/ping', (response) => {
+      expect(response.result).toBe('pong');
+      done();
+    });
+  });
 });
