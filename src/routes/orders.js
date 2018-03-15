@@ -104,9 +104,127 @@ const handler = (request, reply) => {
 //   });
 };
 
-module.exports = {
-  path: '/orders',
-  method: 'GET',
-  handler,
+const handler1 = (request, reply) => {
+  // const a = [
+  //   {
+  //     item_id: 10,
+  //     quantity: 1,
+  //   },
+  //   {
+  //     item_id: 20,
+  //     quantity: 3,
+  //   },
+  // ];
+  const payload = JSON.parse(request.payload.items);
+  const promiseArr = [];
+  for (let i = 0; i < payload.length; i += 1) {
+    const prom = new Promise(response => Models.inventory.findAll({
+      where: {
+        item_id: payload[i].item_id,
+      },
+    }).then((value) => {
+      response(value);
+    }));
+    promiseArr.push(prom);
+  }
+  Promise.all(promiseArr).then((values) => {
+    const promiseArr2 = [];
+    const promiseArr3 = [];
+    let flag = 1;
+    let i;
+    for (i = 0; i < values.length; i += 1) {
+      // console.log(values[i][0].dataValues);
+      if (values[i][0].dataValues.availableqty < payload[i].quantity) {
+        flag = 0;
+        for (let j = 0; j < i; j += 1) {
+          const prom1 = new Promise(resolve => Models.inventory.update(
+            {
+              availableqty: values[j][0].dataValues.availableqty,
+            },
+            {
+              where: {
+                item_id: payload[j].item_id,
+              },
+            },
+          ).then(() => {
+            resolve('back');
+          }));
+          promiseArr3.push(prom1);
+        }
+        reply(`Sorry! We don't have quantity ${payload[i].quantity} of ${values[i][0].dataValues.title}`);
+        break;
+      } else {
+        const prom = new Promise(resolve => Models.inventory.update(
+          {
+            availableqty: values[i][0].dataValues.availableqty - payload[i].quantity,
+          },
+          {
+            where: {
+              item_id: payload[i].item_id,
+            },
+          },
+        ).then(() => {
+          resolve('true');
+        }));
+        promiseArr2.push(prom);
+      }
+    }
+    console.log('flag:::::::::: ', flag);
+    if (flag === 1) {
+      Promise.all(promiseArr2).then(() => {
+        Models.orders.count().then((count) => {
+          Models.orders.create({
+            order_id: count + 1,
+          }).then(() => {
+            const payloadMapped = payload.map(item => ({
+              order_id: count + 1,
+              item_id: item.item_id,
+              quantity: item.quantity,
+            }));
+            Models.itemsordered.bulkCreate(payloadMapped).then(() => {
+              reply('Order Placed');
+            });
+          });
+        });
+        // reply('dcv');
+        // reply(values);
+      });
+    } else {
+      Promise.all(promiseArr3).then(() => {
+        console.log('Rolled Back::::::');
+      });
+    }
+  });
+
+  // console.log(payload);
+  // const payload = JSON.parse(request.payload);
+  // reply(payload);
+  // Models.inventory.findAll({
+  //   where: {
+  //     item_id: request.payload.item_id,
+  //   },
+  // }).then((item) => {
+  //   if (item[0].dataValues.availableqty < request.payload.quantity) {
+  //     reply(`Sorry! We don't have quantity ${request.payload.quantity}
+  // of ${item[0].dataValues.title}`);
+  //   } else {
+  //     Models.orders.count().then((count) => {
+
+  //     })
+  //   }
+  // });
 };
+
+module.exports = [
+  {
+    path: '/orders',
+    method: 'GET',
+    handler,
+  },
+  {
+    path: '/orders',
+    method: 'POST',
+    handler: handler1,
+  },
+];
 
