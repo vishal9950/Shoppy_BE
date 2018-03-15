@@ -1,6 +1,7 @@
 const Server = require('../../src/server');
 const Models = require('../../models');
 
+jest.setTimeout(10000);
 describe('Test server for GET /orders: ', () => {
   beforeAll((done) => {
     Models.orders.create({
@@ -62,3 +63,24 @@ describe('Test server for GET /orders: ', () => {
     });
   });
 });
+// TODO:::::::
+// describe('Test server for POST /orders: ', () => {
+//   test('Should return statusCode 201: ', (done) => {
+//     const options = {
+//       url: '/orders',
+//       method: 'POST',
+//       payload: {
+//         items: [
+//           { item_id: 40, quantity: 10 },
+//           { item_id: 10, quantity: 100 },
+//           { item_id: 20, quantity: 30 },
+//         ],
+//       },
+//     };
+//     Server.inject(options, (response) => {
+//       expect(response.statusCode).toBe(false);
+//       done();
+//     });
+//   });
+// });
+

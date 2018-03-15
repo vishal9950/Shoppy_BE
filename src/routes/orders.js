@@ -94,6 +94,9 @@ const handler = (request, reply) => {
           filteredArr.push(itemsordered[i]);
         }
       }
+      /* TODO
+      Categorize and send
+      */
       reply(filteredArr[0]);
     });
     // });
@@ -115,6 +118,12 @@ const handler1 = (request, reply) => {
   //     quantity: 3,
   //   },
   // ];
+  // console.log('handler1:::::::::');
+  // console.log(request.payload.items);
+
+  /* TODO
+  Use better approach to this
+  */
   const payload = JSON.parse(request.payload.items);
   const promiseArr = [];
   for (let i = 0; i < payload.length; i += 1) {
@@ -182,7 +191,7 @@ const handler1 = (request, reply) => {
               quantity: item.quantity,
             }));
             Models.itemsordered.bulkCreate(payloadMapped).then(() => {
-              reply('Order Placed');
+              reply('Order Placed').code(201);
             });
           });
         });
