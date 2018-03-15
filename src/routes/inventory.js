@@ -27,6 +27,7 @@ const handler = (request, reply) => {
     } else {
       Models.inventory.findAll({
         attributes: ['item_id', 'category', 'brand', 'title', 'availableqty', 'cost', 'description', 'imageurl'],
+        order: [['item_id', 'ASC']],
       }).then((items) => {
         console.log('From DB');
         reply(items).code(200);
