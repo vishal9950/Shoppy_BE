@@ -30,5 +30,33 @@ describe('Test GET /inventory: ', () => {
       });
     });
   });
+
+  test('Should return the inventory items if DB is not empty: ', (done) => {
+    Models.inventory.create({
+      item_id: 1,
+      category: 'Fruits',
+      brand: 'Fresho',
+      title: 'Banana',
+      availableqty: 3,
+      cost: 10,
+      description: '1 kg',
+      imageurl: 'http://someurl',
+    }).then(() => {
+      const testArr = [{
+        item_id: 1,
+        category: 'Fruits',
+        brand: 'Fresho',
+        title: 'Banana',
+        availableqty: 3,
+        cost: 10,
+        description: '1 kg',
+        imageurl: 'http://someurl',
+      }];
+      Server.inject('/inventory', (response) => {
+        expect(JSON.parse(response.payload)).toEqual(testArr);
+        done();
+      });
+    });
+  });
 });
 
