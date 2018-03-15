@@ -6,7 +6,7 @@ const handler = (request, reply) => {
     if (value === 0) {
       rp('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/inventory').then((inventory) => {
         const inventoryJSON = JSON.parse(inventory).inventory;
-        console.log(inventoryJSON);
+        // console.log(inventoryJSON);
         const inventoryMapped = inventoryJSON.map(item => ({
           item_id: item.id,
           category: item.category,
