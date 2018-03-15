@@ -4,14 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/server.js",
-    "test": "jest --coverage --notify"
+    "start": "sequelize db:migrate && nodemon src/server.js",
+    "test": "NODE_ENV=test sequelize db:migrate && NODE_ENV=test jest --coverage --notify --forceExit"
   },
   "author": "Vishal Vasnani <vishalvasnani123@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "hapi": "16",
     "pg": "^7.4.1",
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
     "sequelize": "^4.36.1",
     "sequelize-cli": "^4.0.0"
   },
