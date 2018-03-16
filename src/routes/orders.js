@@ -70,7 +70,7 @@ const handler = (request, reply) => {
         where: {
           order_id: value[i].dataValues.order_id,
         },
-        attributes: ['order_id', 'item_id', 'quantity'],
+        attributes: ['order_id', 'item_id', 'quantity', 'createdAt'],
       }).then((items) => {
         //   if (items.dataValues === null) {
         //     flag = 0;
@@ -97,7 +97,7 @@ const handler = (request, reply) => {
       /* TODO
       Categorize and send
       */
-      reply(filteredArr[0]);
+      reply(filteredArr);
     });
     // });
     // }
